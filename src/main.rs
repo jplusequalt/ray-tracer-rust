@@ -25,7 +25,7 @@ fn main() {
             let g: f32 = (j as f32) / ((IMG_HEIGHT - 1) as f32);
             let b: f32 = 0.25;
 
-            let c = Color(r, g, b);
+            let c = Color::from(r, g, b);
 
             write_pixel(&c);
         }
