@@ -1,6 +1,6 @@
 use std::ops;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Vec3 {
     pub x: f32,
     pub y: f32,
@@ -87,11 +87,11 @@ impl ops::DivAssign for Vec3 {
     }
 }
 
-impl ops::Add for Vec3 {
-    type Output = Self;
+impl ops::Add for &Vec3 {
+    type Output = Vec3;
 
     fn add(self, rhs: Self) -> Self::Output {
-        Self {
+        Vec3 {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
             z: self.z + rhs.z,
@@ -99,11 +99,11 @@ impl ops::Add for Vec3 {
     }
 }
 
-impl ops::Sub for Vec3 {
-    type Output = Self;
+impl ops::Sub for &Vec3 {
+    type Output = Vec3;
 
     fn sub(self, rhs: Self) -> Self::Output {
-        Self {
+        Vec3 {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
             z: self.z - rhs.z,
