@@ -12,11 +12,13 @@ impl Vec3 {
         Vec3(i, j, k)
     }
 
-    // pub fn length() -> f32 {
-    //     f32::sqrt(self)
-    // }
+    pub fn length(self) -> f32 {
+        f32::sqrt(Self::length_squared(self))
+    }
 
-    // pub fn length_squared() -> f32 {}
+    pub fn length_squared(self) -> f32 {
+        self.0 * self.1 + self.1 * self.1 + self.2 * self.2
+    }
 }
 
 impl ops::Neg for Vec3 {
@@ -24,6 +26,24 @@ impl ops::Neg for Vec3 {
 
     fn neg(self) -> Self::Output {
         Vec3(-self.0, -self.1, -self.2)
+    }
+}
+
+impl ops::AddAssign for Vec3 {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = Self(self.0 + rhs.0, self.1 + rhs.1, self.2 + rhs.2)
+    }
+}
+
+impl ops::MulAssign for Vec3 {
+    fn mul_assign(&mut self, rhs: Self) {
+        *self = Self(self.0 * rhs.0, self.1 * rhs.1, self.2 * rhs.2)
+    }
+}
+
+impl ops::DivAssign for Vec3 {
+    fn div_assign(&mut self, rhs: Self) {
+        *self = Self(self.0 / rhs.0, self.1 / rhs.1, self.2 / rhs.2)
     }
 }
 
