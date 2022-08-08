@@ -7,18 +7,21 @@ pub struct Ray {
 }
 
 impl Ray {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             origin: Point::new(),
             direction: Vec3::new(),
         }
     }
 
-    fn from(origin: Point, direction: Vec3) -> Self {
-        Self { origin, direction }
+    pub fn from(origin: &Point, direction: &Vec3) -> Self {
+        Self {
+            origin: origin.clone(),
+            direction: direction.clone(),
+        }
     }
 
-    fn at(&self, t: f32) -> Point {
+    pub fn at(&self, t: f32) -> Point {
         &self.origin + &(&self.direction * t)
     }
 }
