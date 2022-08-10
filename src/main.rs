@@ -7,7 +7,21 @@ use crate::utils::_utils::write_pixel;
 use crate::utils::types::{Color, Point};
 use crate::vec3::Vec3;
 
+fn hit_sphere(center: &Point, radius: f32, r: &Ray) -> bool {
+    let oc = &r.origin - center;
+    let a = Vec3::dot(&r.direction, &r.direction);
+    let b = 2.0 * Vec3::dot(&oc, &r.direction);
+    let c = Vec3::dot(&oc, &oc) - radius * radius;
+    let discriminant = b * b - 4.0 * a * c;
+
+    discriminant > 0.0;
+}
+
 fn ray_color(r: &Ray) -> Color {
+    if hit_sphere(&Point::from(0.0, 0.0, -1.0), 0.5, r) {
+        return Color::from(1.0, 0.0, 0.0);
+    }
+
     let unit_direction = r.direction.unit_vector();
     let t = 0.5 * (unit_direction.y + 1.0);
     Color::from(1.0, 1.0, 1.0) * (1.0 - t) + Color::from(0.5, 0.7, 1.0) * t

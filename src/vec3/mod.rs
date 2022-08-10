@@ -87,7 +87,7 @@ impl ops::DivAssign for Vec3 {
     }
 }
 
-impl ops::Add for &Vec3 {
+impl ops::Add for Vec3 {
     type Output = Vec3;
 
     fn add(self, rhs: Self) -> Self::Output {
@@ -99,7 +99,7 @@ impl ops::Add for &Vec3 {
     }
 }
 
-impl ops::Add for Vec3 {
+impl ops::Add for &Vec3 {
     type Output = Vec3;
 
     fn add(self, rhs: Self) -> Self::Output {
