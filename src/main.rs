@@ -14,7 +14,7 @@ fn hit_sphere(center: &Point, radius: f32, r: &Ray) -> bool {
     let c = Vec3::dot(&oc, &oc) - radius * radius;
     let discriminant = b * b - 4.0 * a * c;
 
-    discriminant > 0.0;
+    discriminant > 0.0
 }
 
 fn ray_color(r: &Ray) -> Color {
