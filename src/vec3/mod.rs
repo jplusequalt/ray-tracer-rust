@@ -40,8 +40,8 @@ impl Vec3 {
         }
     }
 
-    pub fn unit_vector(&self) -> Self {
-        self / self.length()
+    pub fn unit_vector(v: &Vec3) -> Self {
+        v / v.length()
     }
 }
 
