@@ -1,5 +1,3 @@
-use std::io::Write;
-
 mod ray;
 mod utils;
 mod vec3;
@@ -28,7 +26,7 @@ fn main() {
     const FOCAL_LENGTH: f32 = 1.0;
 
     let origin = Point::new();
-    let horizontal = Vec3::from(0.0, VIEWPOINT_WIDTH, 0.0);
+    let horizontal = Vec3::from(VIEWPOINT_WIDTH, 0.0, 0.0);
     let vertical = Vec3::from(0.0, VIEWPOINT_HEIGHT, 0.0);
     let lower_left_corner =
         &origin - &(&horizontal / 2.0) - &vertical / 2.0 - Vec3::from(0.0, 0.0, FOCAL_LENGTH);
@@ -38,14 +36,9 @@ fn main() {
     println!("P3\n{} {}\n255", IMG_WIDTH, IMG_HEIGHT);
 
     for j in (0..=IMG_HEIGHT - 1).rev() {
-        // eprint!("\rProcessing: {}", j);
-        // match std::io::stderr().flush() {
-        //     Ok(_) => (),
-        //     Err(error) => eprintln!("{}", error),
-        // }
         for i in 0..IMG_WIDTH {
             let u = (i as f32) / ((IMG_WIDTH - 1) as f32);
-            let v = (i as f32) / ((IMG_HEIGHT - 1) as f32);
+            let v = (j as f32) / ((IMG_HEIGHT - 1) as f32);
 
             let r = Ray::from(
                 &origin,
@@ -57,6 +50,4 @@ fn main() {
             write_pixel(&c);
         }
     }
-
-    // eprintln!("\nDone");
 }
