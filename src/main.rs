@@ -1,3 +1,5 @@
+mod hitrecord;
+mod hittable;
 mod ray;
 mod sphere;
 mod utils;
@@ -5,24 +7,9 @@ mod vec3;
 
 use crate::ray::Ray;
 use crate::sphere::Sphere;
-use crate::utils::_utils::write_pixel;
+use crate::utils::_utils::{ray_color, write_pixel};
 use crate::utils::types::{Color, Point};
 use crate::vec3::Vec3;
-
-pub struct HitRecord {
-    pub p: Point,
-    pub normal: Vec3,
-    pub t: f32,
-}
-
-pub trait Hittable {
-    fn hit(self, r: &Ray, t_min: f32, t_max: f32, rec: &HitRecord) -> bool;
-}
-
-fn ray_color(r: &Ray) -> Color {
-    let s = Sphere::from(Point::from(0.0, 0.0, -1.0), 0.5);
-    todo!();
-}
 
 fn main() {
     // image
