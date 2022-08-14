@@ -20,6 +20,7 @@ fn main() {
     const IMG_WIDTH: u16 = 400;
     const IMG_HEIGHT: u16 = ((IMG_WIDTH as f32) / ASPECT_RATIO) as u16;
     const SAMPLES_PER_PIXEL: i32 = 100;
+    const MAX_DEPTH: i32 = 50;
 
     // world
     let mut world: HittableList<Sphere> = HittableList::<Sphere> {
@@ -42,7 +43,7 @@ fn main() {
                 let u = (i as f32 + random()) / ((IMG_WIDTH - 1) as f32);
                 let v = (j as f32 + random()) / ((IMG_HEIGHT - 1) as f32);
                 let r = cam.get_ray(u, v);
-                pixel_color += ray_color(&r, &world);
+                pixel_color += ray_color(&r, &world, MAX_DEPTH);
             }
 
             write_pixel(&pixel_color, SAMPLES_PER_PIXEL);

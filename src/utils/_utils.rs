@@ -27,11 +27,16 @@ pub fn write_pixel(pixel_color: &Color, samples_per_pixel: i32) {
     );
 }
 
-pub fn ray_color<T: Hittable>(r: &Ray, world: &T) -> Color {
+pub fn ray_color<T: Hittable>(r: &Ray, world: &T, depth: i32) -> Color {
     let mut rec = HitRecord::new();
 
+    if depth <= 0 {
+        return Color::new();
+    }
+
     if world.hit(r, 0.0, INFINITY, &mut rec) {
-        return (rec.normal + Color::from(1.0, 1.0, 1.0)) * 0.5;
+        let target = &rec.p + &rec.normal + Vec3::random_in_unit_sphere();
+        return ray_color(&Ray::from(&rec.p, &(target - &rec.p)), world, depth - 1) * 0.5;
     }
 
     let unit_direction = Vec3::unit_vector(&r.direction);
@@ -46,7 +51,8 @@ pub fn random() -> f32 {
 }
 
 pub fn random_range(min: f32, max: f32) -> f32 {
-    min + (max - min) * random()
+    let mut rng = rand::thread_rng();
+    rng.gen_range(min..max)
 }
 
 pub fn clamp(x: f32, min: f32, max: f32) -> f32 {
