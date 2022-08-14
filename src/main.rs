@@ -5,6 +5,7 @@ mod sphere;
 mod utils;
 mod vec3;
 
+use crate::hittable::HittableList;
 use crate::ray::Ray;
 use crate::sphere::Sphere;
 use crate::utils::_utils::{ray_color, write_pixel};
@@ -16,6 +17,14 @@ fn main() {
     const ASPECT_RATIO: f32 = 16.0 / 9.0;
     const IMG_WIDTH: u16 = 400;
     const IMG_HEIGHT: u16 = ((IMG_WIDTH as f32) / ASPECT_RATIO) as u16;
+
+    // world
+    let mut world: HittableList<Sphere> = HittableList::<Sphere> {
+        objects: Vec::<Sphere>::new(),
+    };
+
+    world.add(Sphere::from(Point::from(0.0, 0.0, -1.0), 0.5));
+    world.add(Sphere::from(Point::from(0.0, -100.5, -1.0), 100.0));
 
     // camera
 
@@ -43,7 +52,7 @@ fn main() {
                 &(&lower_left_corner + &(&horizontal * u) + (&vertical * v) - &origin),
             );
 
-            let c = ray_color(&r);
+            let c = ray_color(&r, &world);
 
             write_pixel(&c);
         }
