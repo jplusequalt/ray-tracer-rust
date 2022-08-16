@@ -39,7 +39,7 @@ fn main() {
     for j in (0..=IMG_HEIGHT - 1).rev() {
         for i in 0..IMG_WIDTH {
             let mut pixel_color = Color::new();
-            for s in 0..SAMPLES_PER_PIXEL {
+            for _s in 0..SAMPLES_PER_PIXEL {
                 let u = (i as f32 + random()) / ((IMG_WIDTH - 1) as f32);
                 let v = (j as f32 + random()) / ((IMG_HEIGHT - 1) as f32);
                 let r = cam.get_ray(u, v);

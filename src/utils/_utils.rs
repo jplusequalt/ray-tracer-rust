@@ -15,9 +15,9 @@ pub fn write_pixel(pixel_color: &Color, samples_per_pixel: i32) {
 
     // divide the color by the number of pixels
     let scale = 1.0 / (samples_per_pixel as f32);
-    r *= scale;
-    g *= scale;
-    b *= scale;
+    r = f32::sqrt(scale * r);
+    g = f32::sqrt(scale * g);
+    b = f32::sqrt(scale * b);
 
     println!(
         "{} {} {}",
@@ -47,7 +47,7 @@ pub fn ray_color<T: Hittable>(r: &Ray, world: &T, depth: i32) -> Color {
 
 pub fn random() -> f32 {
     let mut rng = rand::thread_rng();
-    rng.gen()
+    rng.gen_range(0.0..1.0)
 }
 
 pub fn random_range(min: f32, max: f32) -> f32 {
