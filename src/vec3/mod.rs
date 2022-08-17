@@ -42,7 +42,7 @@ impl Vec3 {
 
     #[inline]
     pub fn unit_vector(v: &Vec3) -> Self {
-        v / v.length()
+        *v / v.length()
     }
 
     pub fn random() -> Self {
@@ -67,6 +67,11 @@ impl Vec3 {
 
             return p;
         }
+    }
+
+    #[inline]
+    pub fn random_unit_vector() -> Self {
+        Self::unit_vector(&Self::random_in_unit_sphere())
     }
 }
 
@@ -124,18 +129,6 @@ impl ops::Add for Vec3 {
     }
 }
 
-impl ops::Add for &Vec3 {
-    type Output = Vec3;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        Vec3 {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y,
-            z: self.z + rhs.z,
-        }
-    }
-}
-
 impl ops::Sub for Vec3 {
     type Output = Vec3;
 
@@ -148,65 +141,6 @@ impl ops::Sub for Vec3 {
     }
 }
 
-impl ops::Sub<&Vec3> for Vec3 {
-    type Output = Vec3;
-
-    fn sub(self, rhs: &Self) -> Self::Output {
-        Vec3 {
-            x: self.x - rhs.x,
-            y: self.y - rhs.y,
-            z: self.z - rhs.z,
-        }
-    }
-}
-
-impl ops::Sub for &Vec3 {
-    type Output = Vec3;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        Vec3 {
-            x: self.x - rhs.x,
-            y: self.y - rhs.y,
-            z: self.z - rhs.z,
-        }
-    }
-}
-
-impl ops::Sub<&Self> for &Vec3 {
-    type Output = Vec3;
-
-    fn sub(self, rhs: &Self) -> Self::Output {
-        Vec3 {
-            x: self.x - rhs.x,
-            y: self.y - rhs.y,
-            z: self.z - rhs.z,
-        }
-    }
-}
-
-impl ops::Mul<Self> for &Vec3 {
-    type Output = Vec3;
-
-    fn mul(self, rhs: Self) -> Self::Output {
-        Vec3 {
-            x: self.x * rhs.x,
-            y: self.y * rhs.y,
-            z: self.z * rhs.z,
-        }
-    }
-}
-
-impl ops::Mul<f64> for &Vec3 {
-    type Output = Vec3;
-    fn mul(self, rhs: f64) -> Self::Output {
-        Vec3 {
-            x: self.x * rhs,
-            y: self.y * rhs,
-            z: self.z * rhs,
-        }
-    }
-}
-
 impl ops::Mul<f64> for Vec3 {
     type Output = Vec3;
     fn mul(self, rhs: f64) -> Self::Output {
@@ -215,13 +149,6 @@ impl ops::Mul<f64> for Vec3 {
             y: self.y * rhs,
             z: self.z * rhs,
         }
-    }
-}
-
-impl ops::Div<f64> for &Vec3 {
-    type Output = Vec3;
-    fn div(self, rhs: f64) -> Self::Output {
-        self * (1.0 / rhs)
     }
 }
 
