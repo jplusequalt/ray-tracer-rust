@@ -42,7 +42,7 @@ fn ray_color<T: Hittable>(r: &Ray, world: &T, depth: i64) -> Color {
     }
 
     if world.hit(r, 0.001, INFINITY, &mut rec) {
-        let target = rec.p + rec.normal + Vec3::random_unit_vector();
+        let target = rec.p + Vec3::random_in_hemispere(&rec.normal);
         return ray_color(&Ray::from(&rec.p, &(target - rec.p)), world, depth - 1) * 0.5;
     }
 
