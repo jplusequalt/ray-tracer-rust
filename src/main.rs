@@ -6,21 +6,21 @@ mod sphere;
 mod utils;
 mod vec3;
 
+use std::io::Write;
+
 use crate::camera::Camera;
 use crate::hittable::HittableList;
-use crate::ray::Ray;
 use crate::sphere::Sphere;
 use crate::utils::_utils::{random, ray_color, write_pixel};
 use crate::utils::types::{Color, Point};
-use crate::vec3::Vec3;
 
 fn main() {
     // image
-    const ASPECT_RATIO: f32 = 16.0 / 9.0;
-    const IMG_WIDTH: u16 = 400;
-    const IMG_HEIGHT: u16 = ((IMG_WIDTH as f32) / ASPECT_RATIO) as u16;
-    const SAMPLES_PER_PIXEL: i32 = 100;
-    const MAX_DEPTH: i32 = 50;
+    const ASPECT_RATIO: f64 = 16.0 / 9.0;
+    const IMG_WIDTH: i64 = 400;
+    const IMG_HEIGHT: i64 = ((IMG_WIDTH as f64) / ASPECT_RATIO) as i64;
+    const SAMPLES_PER_PIXEL: i64 = 100;
+    const MAX_DEPTH: i64 = 50;
 
     // world
     let mut world: HittableList<Sphere> = HittableList::<Sphere> {
@@ -40,8 +40,8 @@ fn main() {
         for i in 0..IMG_WIDTH {
             let mut pixel_color = Color::new();
             for _s in 0..SAMPLES_PER_PIXEL {
-                let u = (i as f32 + random()) / ((IMG_WIDTH - 1) as f32);
-                let v = (j as f32 + random()) / ((IMG_HEIGHT - 1) as f32);
+                let u = (i as f64 + random()) / ((IMG_WIDTH - 1) as f64);
+                let v = (j as f64 + random()) / ((IMG_HEIGHT - 1) as f64);
                 let r = cam.get_ray(u, v);
                 pixel_color += ray_color(&r, &world, MAX_DEPTH);
             }
