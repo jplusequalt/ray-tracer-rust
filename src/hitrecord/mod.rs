@@ -1,6 +1,9 @@
+use crate::lambertian::Lambertian;
+use crate::material::MaterialObject;
 use crate::ray::Ray;
 use crate::utils::types::Point;
 use crate::vec3::Vec3;
+use crate::utils::types::Color;
 
 #[derive(Clone)]
 pub struct HitRecord {
@@ -8,6 +11,7 @@ pub struct HitRecord {
     pub normal: Vec3,
     pub t: f64,
     pub front_face: bool,
+    pub material: Option<MaterialObject>
 }
 
 impl HitRecord {
@@ -17,14 +21,17 @@ impl HitRecord {
             normal: Vec3::new(),
             t: 0.0,
             front_face: false,
+            material: None
         }
     }
-    fn from(p: Point, normal: Vec3, t: f64, front_face: bool) -> Self {
+
+    fn from(p: Point, normal: Vec3, t: f64, front_face: bool, material: MaterialObject) -> Self {
         HitRecord {
             p,
             normal,
             t,
             front_face,
+            material: Some(material)
         }
     }
 

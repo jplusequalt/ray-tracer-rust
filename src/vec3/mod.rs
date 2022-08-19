@@ -40,6 +40,15 @@ impl Vec3 {
         )
     }
 
+    pub fn reflect(v: &Vec3, n: &Vec3) -> Self {
+        *v - *n * Self::dot(v, n) * 2f64
+    }
+
+    pub fn near_zero(&self) -> bool {
+        let s = 1e-8;
+        (f64::abs(self.x) < s) && (f64::abs(self.y) < s) && (f64::abs(self.z) < s)
+    }
+
     #[inline]
     pub fn unit_vector(v: &Vec3) -> Self {
         *v / v.length()
@@ -146,6 +155,17 @@ impl ops::Sub for Vec3 {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
             z: self.z - rhs.z,
+        }
+    }
+}
+
+impl ops::Mul<Vec3> for Vec3 {
+    type Output = Vec3;
+    fn mul(self, rhs: Vec3) -> Self::Output {
+        Vec3 {
+            x: self.x * rhs.x,
+            y: self.y * rhs.y,
+            z: self.z * rhs.z
         }
     }
 }

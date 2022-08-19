@@ -5,15 +5,23 @@ mod ray;
 mod sphere;
 mod utils;
 mod vec3;
+mod lambertian;
+mod material;
+mod metal;
+
+use material::Material;
 
 use crate::camera::Camera;
 use crate::hitrecord::HitRecord;
 use crate::hittable::{Hittable, HittableList};
+use crate::lambertian::Lambertian;
+use crate::metal::Metal;
 use crate::ray::Ray;
 use crate::sphere::Sphere;
 use crate::utils::_utils::{random, INFINITY};
 use crate::utils::types::{Color, Point};
 use crate::vec3::Vec3;
+use crate::material::MaterialObject;
 
 fn write_pixel(pixel_color: &Color, samples_per_pixel: i64) {
     let mut r = pixel_color.x;
@@ -42,8 +50,16 @@ fn ray_color<T: Hittable>(r: &Ray, world: &T, depth: i64) -> Color {
     }
 
     if world.hit(r, 0.001, INFINITY, &mut rec) {
-        let target = rec.p + Vec3::random_in_hemispere(&rec.normal);
-        return ray_color(&Ray::from(&rec.p, &(target - rec.p)), world, depth - 1) * 0.5;
+        let mut scattered = Ray::new();
+        let mut attenuation = Color::new();
+        // let target = rec.p + Vec3::random_in_hemispere(&rec.normal);
+        // return ray_color(&Ray::from(&rec.p, &(target - rec.p)), world, depth - 1) * 0.5;
+
+        if rec.material.unwrap().scatter(r, &rec, &mut attenuation, &mut scattered) {
+            return attenuation * ray_color(&scattered, world, depth - 1);
+        }
+
+        return Color::new();
     }
 
     let unit_direction = Vec3::unit_vector(&r.direction);
@@ -65,8 +81,25 @@ fn main() {
         objects: Vec::<Sphere>::new(),
     };
 
-    world.add(Sphere::from(Point::from(0.0, 0.0, -1.0), 0.5));
-    world.add(Sphere::from(Point::from(0.0, -100.5, -1.0), 100.0));
+    let material_ground = Lambertian {
+        albedo: Color::from(0.8, 0.8, 0.0)
+    };
+
+    let material_center = Lambertian {
+        albedo: Color::from(0.7, 0.3, 0.3)
+    };
+
+    let material_left = Metal {
+        albedo: Color::from(0.8, 0.8, 0.8)
+    };
+    let material_right = Metal {
+        albedo: Color::from(0.8, 0.6, 0.2)
+    };
+
+    world.add(Sphere::from(Point::from(0.0, -100.5, -1.0), 100.0, MaterialObject::Lambertian(material_ground)));
+    world.add(Sphere::from(Point::from(0.0, 0.0, -1.0), 0.5, MaterialObject::Lambertian(material_center)));
+    world.add(Sphere::from(Point::from(-1.0, 0.0, -1.0), 0.5, MaterialObject::Metal(material_left)));
+    world.add(Sphere::from(Point::from(1.0, 0.0, -1.0), 0.5, MaterialObject::Metal(material_right)));
 
     // camera
     let cam = Camera::new();
