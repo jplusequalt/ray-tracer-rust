@@ -17,7 +17,7 @@ impl Sphere {
     }
 }
 
-impl<'a> Hittable for Sphere {
+impl Hittable for Sphere {
     fn hit(&self, r: &Ray, t_min: f64, t_max: f64, rec: &mut HitRecord) -> bool {
         let oc = r.origin - self.center;
         let a = r.direction.length_squared();

@@ -8,10 +8,13 @@ mod vec3;
 mod lambertian;
 mod material;
 mod metal;
+mod dialetric;
 
 use material::Material;
+use utils::_utils::random_range;
 
 use crate::camera::Camera;
+use crate::dialetric::Dialetric;
 use crate::hitrecord::HitRecord;
 use crate::hittable::{Hittable, HittableList};
 use crate::lambertian::Lambertian;
@@ -22,6 +25,7 @@ use crate::utils::_utils::{random, INFINITY};
 use crate::utils::types::{Color, Point};
 use crate::vec3::Vec3;
 use crate::material::MaterialObject;
+
 
 fn write_pixel(pixel_color: &Color, samples_per_pixel: i64) {
     let mut r = pixel_color.x;
@@ -68,41 +72,100 @@ fn ray_color<T: Hittable>(r: &Ray, world: &T, depth: i64) -> Color {
     Color::from(1.0, 1.0, 1.0) * (1.0 - t) + Color::from(0.5, 0.7, 1.0) * t
 }
 
-fn main() {
-    // image
-    const ASPECT_RATIO: f64 = 16.0 / 9.0;
-    const IMG_WIDTH: i64 = 400;
-    const IMG_HEIGHT: i64 = ((IMG_WIDTH as f64) / ASPECT_RATIO) as i64;
-    const SAMPLES_PER_PIXEL: i64 = 100;
-    const MAX_DEPTH: i64 = 50;
+fn random_scene() -> HittableList<Sphere> {
 
-    // world
-    let mut world: HittableList<Sphere> = HittableList::<Sphere> {
+    let mut world =  HittableList::<Sphere> {
         objects: Vec::<Sphere>::new(),
     };
 
     let material_ground = Lambertian {
-        albedo: Color::from(0.8, 0.8, 0.0)
+        albedo: Color::from(0.5, 0.5, 0.5)
     };
 
-    let material_center = Lambertian {
-        albedo: Color::from(0.7, 0.3, 0.3)
-    };
+    world.add(Sphere::from(Point::from(0.0, -1000.0, 0.0), 1000.0, MaterialObject::Lambertian(material_ground)));
 
-    let material_left = Metal {
-        albedo: Color::from(0.8, 0.8, 0.8)
-    };
-    let material_right = Metal {
-        albedo: Color::from(0.8, 0.6, 0.2)
-    };
+    for a in -11..11 {
+        for b in -11..11 {
+            let choose_mat = random();
+            let center = Point::from((a as f64) + 0.9 * random(), 0.2, (b as f64) + 0.9 * random());
 
-    world.add(Sphere::from(Point::from(0.0, -100.5, -1.0), 100.0, MaterialObject::Lambertian(material_ground)));
-    world.add(Sphere::from(Point::from(0.0, 0.0, -1.0), 0.5, MaterialObject::Lambertian(material_center)));
-    world.add(Sphere::from(Point::from(-1.0, 0.0, -1.0), 0.5, MaterialObject::Metal(material_left)));
-    world.add(Sphere::from(Point::from(1.0, 0.0, -1.0), 0.5, MaterialObject::Metal(material_right)));
+            if (center - Point::from(4.0, 0.2, 0.0)).length() > 0.9 {
+                let sphere_material: MaterialObject;
+
+                if choose_mat < 0.8 {
+                    // diffuse
+                    let albedo = Color::random() * Color::random();
+                    sphere_material = material::MaterialObject::Lambertian(Lambertian {
+                        albedo
+                    });
+
+                    
+                } else if choose_mat < 0.95 {
+                    // metal 
+                    let albedo = Color::random_range(0.5, 1.0);
+                    let fuzz = random_range(0.0, 0.5);
+                    sphere_material = MaterialObject::Metal(Metal {
+                        albedo,
+                        fuzz
+                    });
+                } else {
+                    // glass
+                    sphere_material = MaterialObject::Dialetric(Dialetric {
+                        ir: 1.5
+                    });
+                }
+
+                world.add(Sphere::from(center, 0.2, sphere_material));
+            }
+        }
+    }
+
+    let material1 = MaterialObject::Dialetric(Dialetric {
+        ir: 1.5
+    });
+    world.add(Sphere::from(Point::from(0.0, 1.0, 0.0), 1.0, material1));
+
+    let material2 = MaterialObject::Lambertian(Lambertian {
+        albedo: Color::from(0.4, 0.2, 0.1)
+    });
+    world.add(Sphere::from(Point::from(-4.0, 1.0, 0.0), 1.0, material2));
+
+    let material3 = MaterialObject::Metal(Metal {
+        albedo: Color::from(0.7, 0.6, 0.5),
+        fuzz: 0.0
+    });
+    world.add(Sphere::from(Point::from(4.0, 1.0, 0.0), 1.0, material3));
+    
+    world
+}
+
+fn main() {
+    // image
+    const ASPECT_RATIO: f64 = 3.0 / 2.0;
+    const IMG_WIDTH: i64 = 1200;
+    const IMG_HEIGHT: i64 = ((IMG_WIDTH as f64) / ASPECT_RATIO) as i64;
+    const SAMPLES_PER_PIXEL: i64 = 500;
+    const MAX_DEPTH: i64 = 50;
+
+    // world
+    let world = random_scene();
 
     // camera
-    let cam = Camera::new();
+    let lookfrom = Point::from(13.0, 2.0, 3.0);
+    let lookat = Point::from(0.0, 0.0, 0.0);
+    let vup = Vec3::from(0.0, 1.0, 0.0);
+    let dist_to_focus = 10.0;
+    let aperture = 0.1;
+
+    let cam = Camera::from(
+        lookfrom,
+        lookat,
+        vup,
+        20f64, 
+        ASPECT_RATIO,
+        aperture,
+        dist_to_focus
+    );
 
     // render
     println!("P3\n{} {}\n255", IMG_WIDTH, IMG_HEIGHT);

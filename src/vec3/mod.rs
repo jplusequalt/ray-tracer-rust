@@ -35,13 +35,20 @@ impl Vec3 {
     pub fn cross(u: &Vec3, v: &Vec3) -> Self {
         Self::from(
             u.y * v.z - u.z * v.y,
-            u.x * v.z - u.z * v.x,
+            u.z * v.x - u.x * v.z,
             u.x * v.y - u.y * v.x,
         )
     }
 
     pub fn reflect(v: &Vec3, n: &Vec3) -> Self {
         *v - *n * Self::dot(v, n) * 2f64
+    }
+
+    pub fn refract(uv: &Vec3, n: &Vec3, etai_over_etat: f64) -> Self {
+        let cos_theta = f64::min(Self::dot(&-*uv, &n), 1.0);
+        let r_out_perp = (*uv + (*n * cos_theta)) * etai_over_etat;
+        let r_out_parallel = *n * -f64::sqrt(f64::abs(1.0 - r_out_perp.length_squared()));
+        r_out_perp + r_out_parallel
     }
 
     pub fn near_zero(&self) -> bool {
